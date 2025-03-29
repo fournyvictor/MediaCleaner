@@ -1,7 +1,7 @@
 #!/bin/bash
 
 qb_auth() {
-    local login=$(curl -i --header 'Referer: http://192.168.1.47:10095' --data 'username=admin&password=adminadmin' http://192.168.1.47:10095/api/v2/auth/login)
+    local login=$(curl -i --header 'Referer: ' --data 'username=admin&password=' /api/v2/auth/login)
     cookie=$(echo "$login" | awk 'NR==9 {print $2}' | sed 's/.$//')
     echo "$cookie"
 }
@@ -10,7 +10,7 @@ qb_auth() {
 get_torrent_downloading_list() {
     local response
 
-    response=$(curl 'http://192.168.1.47:10095/api/v2/torrents/info?filter=downloading&filter=active' --cookie "$(qb_auth)")
+    response=$(curl '/api/v2/torrents/info?filter=downloading&filter=active' --cookie "$(qb_auth)")
     format=$(echo "$response" | jq -r '.[] | [.name] | @tsv')
     echo "$format"
 }
@@ -27,7 +27,7 @@ process_files() {
                 echo -e "\e[34mFile \"$processed_line\" is in the downloading list, skipping...\e[0m"
                 exit=1
             fi
-            if [[ "$file_name" != *.nfo && "$file_name" != *.sh && "$file_name" != *.log && "$file_name" != *.rar && "$file_name" != *.png && "$file_name" != *.jpg && "$file_name" != *.html && "$f>
+            if [[ "$file_name" != *.nfo && "$file_name" != *.sh && "$file_name" != *.log && "$file_name" != *.rar && "$file_name" != *.png && "$file_name" != *.jpg && "$file_name" != *.html && "$file_name" != *.txt && "$file_name" != *.url && "$file_name" != *.URL && "$file_name" != *.rtf && "$file_name" != *.md && "$file_name" != *.js && "$file_name" != *.json && "$file_name" != *.crt && "$file_name" != *.key && "$file_name" != *.ico && "$file_name" != *.gz && "$file_name" != *.pid && "$file_name" != *.init ]]; then
                 rm_output=$(echo "$file_name" 2>&1)
                 if [ $? -eq 0 ]; then
                     echo -e "\e[32mThe file \"$file_name\" would be deleted.\e[0m"
@@ -60,7 +60,7 @@ done
 WEBHOOK_URL=""
 
 # Replace 'LOG_FILE_PATH' with the full path to your log file
-LOG_FILE_PATH="/mnt/Stockage/Jelly/MediaCleanScout.log"
+LOG_FILE_PATH="/library/MediaCleanScout.log"
  while IFS= read -r line; do
         processed_line=$(echo "$line" | cut -c6- | rev | cut -c5- | rev)
         log_content="$log_content$processed_line\n"
@@ -74,5 +74,3 @@ if [ -f "$LOG_FILE_PATH" ]; then
 else
     echo "The log file does not exist: $LOG_FILE_PATH"
 fi
-
-    
